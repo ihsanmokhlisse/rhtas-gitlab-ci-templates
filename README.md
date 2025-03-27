@@ -1,92 +1,105 @@
-# RHTAS GitLab CI Templates
-
-This repository contains reusable GitLab CI templates for integrating Red Hat Trusted Artifact Signer (RHTAS) into your CI/CD pipelines. These templates provide standardized configurations for signing artifacts and containers using RHTAS.
+# Red Hat Trusted Artifact Signer (RHTAS) Documentation
 
 ## Overview
 
-Red Hat Trusted Artifact Signer (RHTAS) is a solution for signing and verifying software artifacts and container images. These templates make it easy to integrate RHTAS signing capabilities into your GitLab CI/CD pipelines.
+This repository contains comprehensive documentation for Red Hat Trusted Artifact Signer (RHTAS), including operator guides, automation tools, and GitLab CI integration templates.
 
-## Prerequisites
+## Documentation Structure
 
-- GitLab CI/CD
-- Access to an RHTAS instance (version 1.1.1+)
-- OpenShift cluster running RHTAS (4.13+)
-- GitLab OIDC provider configured in RHTAS
+### 1. RHTAS Core Documentation
 
-## Quick Start
+#### Operator
+- [Installation Guide](docs/rhtas/operator/installation.md)
+- [Configuration Guide](docs/rhtas/operator/configuration.md)
+- [Troubleshooting Guide](docs/rhtas/operator/troubleshooting.md)
 
-1. Include the desired template in your `.gitlab-ci.yml`:
+#### SecureSign Instance
+- [Instance Setup](docs/rhtas/securesign/setup.md)
+- [Instance Configuration](docs/rhtas/securesign/configuration.md)
+- [Troubleshooting Guide](docs/rhtas/securesign/troubleshooting.md)
 
-```yaml
-include:
-  - remote: 'https://raw.githubusercontent.com/ihsanmokhlisse/rhtas-gitlab-ci-templates/main/templates/artifact-signing.yml'
-```
+#### Management and Administration
+- [Administrative Tasks](docs/rhtas/admin/tasks.md)
+- [User Management](docs/rhtas/admin/user-management.md)
+- [Access Control](docs/rhtas/admin/access-control.md)
+- [Monitoring and Logging](docs/rhtas/admin/monitoring.md)
+- [Troubleshooting Guide](docs/rhtas/admin/troubleshooting.md)
 
-2. Configure the required variables:
+#### Lifecycle Management
+- [Update Procedures](docs/rhtas/lifecycle/updates.md)
+- [Backup and Recovery](docs/rhtas/lifecycle/backup-recovery.md)
+- [Version Compatibility](docs/rhtas/lifecycle/compatibility.md)
+- [Troubleshooting Guide](docs/rhtas/lifecycle/troubleshooting.md)
 
-```yaml
-variables:
-  RHTAS_URL: "https://your-rhtas-instance.com"
-  RHTAS_OIDC_ISSUER: "https://your-gitlab.com"
-```
+### 2. Automation with Ansible
 
-3. Use the template in your pipeline:
+- [Ansible Integration](docs/automation/ansible/integration.md)
+- [Playbook Reference](docs/automation/ansible/playbooks.md)
+- [Role Documentation](docs/automation/ansible/roles.md)
+- [Variables Reference](docs/automation/ansible/variables.md)
+- [Troubleshooting Guide](docs/automation/ansible/troubleshooting.md)
 
-```yaml
-sign-artifact:
-  extends: .rhtas-sign-artifact
-  variables:
-    ARTIFACT_PATH: "target/*.jar"
-```
+### 3. GitLab CI Integration
 
-## Repository Structure
+#### Templates
+- [Template Reference](docs/gitlab-ci/templates/reference.md)
+- [Configuration Guide](docs/gitlab-ci/templates/configuration.md)
+- [Security Best Practices](docs/gitlab-ci/templates/security.md)
 
-```
-.
-├── templates/
-│   ├── artifact-signing.yml
-│   ├── container-signing.yml
-│   └── verification.yml
-├── examples/
-│   ├── maven-artifact/
-│   └── container-image/
-└── docs/
-    ├── getting-started.md     # Setup and installation guide
-    ├── template-reference.md  # Detailed template documentation
-    ├── security.md           # Security best practices
-    └── examples.md           # Example implementations
-```
+#### Pipeline Integration
+- [Pipeline Setup](docs/gitlab-ci/pipeline/setup.md)
+- [OIDC Configuration](docs/gitlab-ci/pipeline/oidc.md)
+- [Artifact Signing](docs/gitlab-ci/pipeline/signing.md)
+- [Container Signing](docs/gitlab-ci/pipeline/containers.md)
+- [Troubleshooting Guide](docs/gitlab-ci/pipeline/troubleshooting.md)
 
-## Documentation
+## Quick Start Guides
 
-Our documentation is organized by major topics:
+1. [RHTAS Operator Installation](docs/quickstart/operator-install.md)
+2. [SecureSign Instance Setup](docs/quickstart/securesign-setup.md)
+3. [GitLab CI Integration](docs/quickstart/gitlab-integration.md)
+4. [Ansible Automation](docs/quickstart/ansible-automation.md)
 
-- [Getting Started Guide](docs/getting-started.md) - Installation and basic setup
-- [Template Reference](docs/template-reference.md) - Detailed template documentation
-- [Security Best Practices](docs/security.md) - Security guidelines and recommendations
-- [Examples](docs/examples.md) - Real-world implementation examples
+## Detailed Guides
 
-## Configuration
+### RHTAS Implementation
+- [Architecture Overview](docs/guides/rhtas/architecture.md)
+- [Security Considerations](docs/guides/rhtas/security.md)
+- [Performance Tuning](docs/guides/rhtas/performance.md)
+- [High Availability](docs/guides/rhtas/high-availability.md)
 
-### Required Variables
+### Automation Implementation
+- [CI/CD Integration](docs/guides/automation/cicd.md)
+- [Custom Playbook Development](docs/guides/automation/custom-playbooks.md)
+- [Advanced Configurations](docs/guides/automation/advanced-config.md)
 
-- `RHTAS_URL`: URL of your RHTAS instance
-- `RHTAS_OIDC_ISSUER`: OIDC issuer URL (typically your GitLab instance)
+### GitLab CI Implementation
+- [Advanced Pipeline Patterns](docs/guides/gitlab-ci/advanced-patterns.md)
+- [Custom Template Development](docs/guides/gitlab-ci/custom-templates.md)
+- [Security Hardening](docs/guides/gitlab-ci/security-hardening.md)
 
-### Optional Variables
+## Troubleshooting
 
-- `RHTAS_NAMESPACE`: RHTAS namespace (default: trusted-artifact-signer)
-- `SIGN_TIMEOUT`: Signing operation timeout in seconds (default: 300)
-- `VERIFICATION_POLICY`: Policy for signature verification (default: strict)
+- [Common Issues](docs/troubleshooting/common-issues.md)
+- [Known Limitations](docs/troubleshooting/limitations.md)
+- [FAQs](docs/troubleshooting/faq.md)
+
+## Reference
+
+- [API Documentation](docs/reference/api.md)
+- [CLI Reference](docs/reference/cli.md)
+- [Configuration Reference](docs/reference/configuration.md)
+- [Variable Reference](docs/reference/variables.md)
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-Apache License 2.0
+Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to contribute to this documentation.
 
 ## Support
 
-For issues and questions, please open an issue in this repository.
+For issues or questions, contact:
+- Maintainer: Ihsan Mokhlisse <imokhlis@redhat.com>
+
+## License
+
+This documentation is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
