@@ -1,28 +1,72 @@
 # Getting Started with RHTAS GitLab CI Templates
 
+This guide will help you set up and start using the RHTAS GitLab CI templates in your projects.
+
 ## Prerequisites
 
 - GitLab CI/CD environment
-- RHTAS instance (version 1.1.1+)
-- OpenShift cluster (4.13+)
+- Access to an RHTAS instance (v1.1.1+)
+- OpenShift cluster (4.13+) running RHTAS
 - GitLab OIDC provider configured in RHTAS
 
-## Quick Start
+## Installation
 
-1. Add template to your `.gitlab-ci.yml`:
+1. Configure OIDC in GitLab:
+
+```yaml
+oidc:
+  enabled: true
+  issuer: https://your-gitlab.com
+```
+
+2. Configure RHTAS OIDC provider:
+
+```yaml
+apiVersion: trusted.signing/v1alpha1
+kind: OIDCProvider
+metadata:
+  name: gitlab-provider
+spec:
+  issuer: https://your-gitlab.com
+  clientID: rhtas-client
+  claims:
+    - project_path
+    - namespace_path
+```
+
+3. Create signing policies in RHTAS:
+
+```yaml
+apiVersion: trusted.signing/v1alpha1
+kind: SigningPolicy
+metadata:
+  name: gitlab-signing-policy
+spec:
+  oidcProvider: gitlab-provider
+  conditions:
+    - claim: project_path
+      values: [your-group/your-project]
+```
+
+## Template Integration
+
+1. Include the desired template in your `.gitlab-ci.yml`:
+
 ```yaml
 include:
   - remote: 'https://raw.githubusercontent.com/ihsanmokhlisse/rhtas-gitlab-ci-templates/main/templates/artifact-signing.yml'
 ```
 
-2. Configure RHTAS variables:
+2. Configure required variables:
+
 ```yaml
 variables:
-  RHTAS_URL: "https://your-rhtas-instance.com"
-  RHTAS_OIDC_ISSUER: "https://your-gitlab.com"
+  RHTAS_URL: "https://rhtas.example.com"
+  RHTAS_OIDC_ISSUER: "https://gitlab.example.com"
 ```
 
-3. Use the template:
+3. Use the template in your pipeline:
+
 ```yaml
 sign-artifact:
   extends: .rhtas-sign-artifact
@@ -30,20 +74,17 @@ sign-artifact:
     ARTIFACT_PATH: "target/*.jar"
 ```
 
-## Installation
+## Verification
 
-1. RHTAS Setup
-   - Install RHTAS operator via OLM
-   - Configure OIDC integration
-   - Set up required roles and permissions
+To verify your setup:
 
-2. GitLab Configuration
-   - Enable OIDC token generation
-   - Configure project CI/CD variables
-   - Set up required permissions
+1. Run a test pipeline
+2. Check RHTAS logs for successful authentication
+3. Verify signature creation
+4. Test signature verification
 
 ## Next Steps
 
-- Review the [Template Reference](template-reference.md)
-- Check [Security Best Practices](security.md)
-- See [Examples](examples.md)
+- Review the [Template Reference](template-reference.md) for detailed configuration options
+- Check [Security Best Practices](security.md) for secure implementation
+- Explore [Examples](examples.md) for real-world implementations

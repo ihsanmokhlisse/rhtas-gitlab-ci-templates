@@ -1,41 +1,122 @@
-# RHTAS Template Reference
+# Template Reference
+
+Detailed documentation for all available RHTAS GitLab CI templates.
 
 ## Available Templates
 
-### Artifact Signing (.rhtas-sign-artifact)
+### artifact-signing.yml
+
+Template for signing generic artifacts.
+
+```yaml
+.rhtas-sign-artifact:
+  variables:
+    RHTAS_URL: ""
+    RHTAS_OIDC_ISSUER: ""
+    ARTIFACT_PATH: ""
+    SIGN_TIMEOUT: "300"
+  script:
+    - rhtas sign artifact $ARTIFACT_PATH
+```
+
+#### Variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| RHTAS_URL | Yes | - | RHTAS instance URL |
+| RHTAS_OIDC_ISSUER | Yes | - | OIDC issuer URL |
+| ARTIFACT_PATH | Yes | - | Path to artifact(s) |
+| SIGN_TIMEOUT | No | 300 | Timeout in seconds |
+
+### container-signing.yml
+
+Template for signing container images.
+
+```yaml
+.rhtas-sign-container:
+  variables:
+    RHTAS_URL: ""
+    RHTAS_OIDC_ISSUER: ""
+    IMAGE_REFERENCE: ""
+    SIGN_TIMEOUT: "300"
+  script:
+    - rhtas sign container $IMAGE_REFERENCE
+```
+
+#### Variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| RHTAS_URL | Yes | - | RHTAS instance URL |
+| RHTAS_OIDC_ISSUER | Yes | - | OIDC issuer URL |
+| IMAGE_REFERENCE | Yes | - | Container image reference |
+| SIGN_TIMEOUT | No | 300 | Timeout in seconds |
+
+### verification.yml
+
+Template for verifying signatures.
+
+```yaml
+.rhtas-verify:
+  variables:
+    RHTAS_URL: ""
+    VERIFICATION_POLICY: "strict"
+    TARGET_PATH: ""
+  script:
+    - rhtas verify $TARGET_PATH
+```
+
+#### Variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| RHTAS_URL | Yes | - | RHTAS instance URL |
+| VERIFICATION_POLICY | No | strict | Verification policy |
+| TARGET_PATH | Yes | - | Path to verify |
+
+## Common Configuration
+
+### Environment Variables
 
 ```yaml
 variables:
-  RHTAS_URL: ""            # Required: RHTAS instance URL
-  RHTAS_OIDC_ISSUER: ""    # Required: GitLab instance URL
-  RHTAS_NAMESPACE: "trusted-artifact-signer"  # Optional
-  SIGN_TIMEOUT: "300"      # Optional: Timeout in seconds
-  ARTIFACT_PATH: ""        # Required: Path to artifact(s)
+  RHTAS_NAMESPACE: "trusted-artifact-signer"
+  RHTAS_LOG_LEVEL: "info"
 ```
 
-### Container Signing (.rhtas-sign-container)
+### Pipeline Configuration
+
+```yaml
+default:
+  tags:
+    - rhtas
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+```
+
+## Advanced Usage
+
+### Custom Verification Policies
 
 ```yaml
 variables:
-  RHTAS_URL: ""            # Required: RHTAS instance URL
-  RHTAS_OIDC_ISSUER: ""    # Required: GitLab instance URL
-  RHTAS_NAMESPACE: "trusted-artifact-signer"  # Optional
-  SIGN_TIMEOUT: "300"      # Optional: Timeout in seconds
-  CONTAINER_IMAGE: ""      # Required: Container image reference
+  VERIFICATION_POLICY: |
+    {"type": "strict",
+     "required_signatures": 2,
+     "trusted_identities": ["signer1", "signer2"]}
 ```
 
-### Verification (.rhtas-verify)
+### Parallel Signing
 
 ```yaml
-variables:
-  RHTAS_URL: ""            # Required: RHTAS instance URL
-  VERIFICATION_POLICY: "strict"  # Optional: Verification policy
-  TARGET_PATH: ""          # Required: Path/URL to verify
+sign-artifacts:
+  parallel:
+    matrix:
+      - ARTIFACT: ["lib/*.jar", "bin/*.exe"]
+  extends: .rhtas-sign-artifact
+  variables:
+    ARTIFACT_PATH: $ARTIFACT
 ```
-
-## Template Behaviors
-
-- Templates run only on tagged commits by default
-- Verification template runs on merge requests
-- All templates use UBI minimal as base image
-- Automatic cosign installation included
