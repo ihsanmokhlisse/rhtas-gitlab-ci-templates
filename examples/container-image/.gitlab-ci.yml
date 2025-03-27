@@ -1,0 +1,20 @@
+include:
+  - remote: 'https://raw.githubusercontent.com/ihsanmokhlisse/rhtas-gitlab-ci-templates/main/templates/container-signing.yml'
+
+variables:
+  RHTAS_URL: "https://rhtas.example.com"
+  RHTAS_OIDC_ISSUER: "https://gitlab.example.com"
+
+build:
+  image: docker:20.10
+  services:
+    - docker:20.10-dind
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+
+sign:
+  extends: .rhtas-sign-container
+  needs: [build]
+  variables:
+    CONTAINER_IMAGE: "${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}"

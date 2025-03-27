@@ -1,0 +1,30 @@
+# RHTAS Container Signing Template
+
+.rhtas-sign-container:
+  image: registry.access.redhat.com/ubi8/ubi-minimal:latest
+  variables:
+    RHTAS_URL: ""
+    RHTAS_OIDC_ISSUER: ""
+    RHTAS_NAMESPACE: "trusted-artifact-signer"
+    SIGN_TIMEOUT: "300"
+    CONTAINER_IMAGE: ""
+  before_script:
+    - curl -L -o /usr/local/bin/cosign https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64
+    - chmod +x /usr/local/bin/cosign
+  script:
+    - |
+      if [ -z "$RHTAS_URL" ] || [ -z "$RHTAS_OIDC_ISSUER" ] || [ -z "$CONTAINER_IMAGE" ]; then
+        echo "Error: Required variables not set"
+        exit 1
+      fi
+    - |
+      export COSIGN_EXPERIMENTAL=1
+      cosign sign --oidc-issuer "${RHTAS_OIDC_ISSUER}" \
+                 --fulcio-url "${RHTAS_URL}/api/fulcio" \
+                 --rekor-url "${RHTAS_URL}/api/rekor" \
+                 --timeout "${SIGN_TIMEOUT}s" \
+                 "${CONTAINER_IMAGE}"
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: always
+    - when: never

@@ -1,0 +1,26 @@
+# RHTAS Signature Verification Template
+
+.rhtas-verify:
+  image: registry.access.redhat.com/ubi8/ubi-minimal:latest
+  variables:
+    RHTAS_URL: ""
+    VERIFICATION_POLICY: "strict"
+    TARGET_PATH: ""
+  before_script:
+    - curl -L -o /usr/local/bin/cosign https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64
+    - chmod +x /usr/local/bin/cosign
+  script:
+    - |
+      if [ -z "$RHTAS_URL" ] || [ -z "$TARGET_PATH" ]; then
+        echo "Error: Required variables not set"
+        exit 1
+      fi
+    - |
+      export COSIGN_EXPERIMENTAL=1
+      cosign verify --rekor-url "${RHTAS_URL}/api/rekor" \
+                   --policy "${VERIFICATION_POLICY}" \
+                   "${TARGET_PATH}"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
+    - when: on_success

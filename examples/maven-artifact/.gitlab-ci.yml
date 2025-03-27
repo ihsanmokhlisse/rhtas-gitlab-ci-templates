@@ -1,0 +1,20 @@
+include:
+  - remote: 'https://raw.githubusercontent.com/ihsanmokhlisse/rhtas-gitlab-ci-templates/main/templates/artifact-signing.yml'
+
+variables:
+  RHTAS_URL: "https://rhtas.example.com"
+  RHTAS_OIDC_ISSUER: "https://gitlab.example.com"
+
+build:
+  image: maven:3.8-openjdk-11
+  script:
+    - mvn package
+  artifacts:
+    paths:
+      - target/*.jar
+
+sign:
+  extends: .rhtas-sign-artifact
+  needs: [build]
+  variables:
+    ARTIFACT_PATH: "target/*.jar"
