@@ -13,33 +13,7 @@ Red Hat Trusted Artifact Signer (RHTAS) is a solution for signing and verifying 
 - OpenShift cluster running RHTAS (4.13+)
 - GitLab OIDC provider configured in RHTAS
 
-## Templates
-
-### Available Templates
-
-- `artifact-signing.yml` - Template for signing generic artifacts
-- `container-signing.yml` - Template for signing container images
-- `verification.yml` - Template for verifying signed artifacts and images
-
-### Directory Structure
-
-```
-.
-├── templates/
-│   ├── artifact-signing.yml
-│   ├── container-signing.yml
-│   └── verification.yml
-├── examples/
-│   ├── maven-artifact/
-│   ├── container-image/
-│   └── verification/
-└── docs/
-    ├── setup.md
-    ├── configuration.md
-    └── troubleshooting.md
-```
-
-## Usage
+## Quick Start
 
 1. Include the desired template in your `.gitlab-ci.yml`:
 
@@ -65,6 +39,33 @@ sign-artifact:
     ARTIFACT_PATH: "target/*.jar"
 ```
 
+## Repository Structure
+
+```
+.
+├── templates/
+│   ├── artifact-signing.yml
+│   ├── container-signing.yml
+│   └── verification.yml
+├── examples/
+│   ├── maven-artifact/
+│   └── container-image/
+└── docs/
+    ├── getting-started.md     # Setup and installation guide
+    ├── template-reference.md  # Detailed template documentation
+    ├── security.md           # Security best practices
+    └── examples.md           # Example implementations
+```
+
+## Documentation
+
+Our documentation is organized by major topics:
+
+- [Getting Started Guide](docs/getting-started.md) - Installation and basic setup
+- [Template Reference](docs/template-reference.md) - Detailed template documentation
+- [Security Best Practices](docs/security.md) - Security guidelines and recommendations
+- [Examples](docs/examples.md) - Real-world implementation examples
+
 ## Configuration
 
 ### Required Variables
@@ -77,20 +78,6 @@ sign-artifact:
 - `RHTAS_NAMESPACE`: RHTAS namespace (default: trusted-artifact-signer)
 - `SIGN_TIMEOUT`: Signing operation timeout in seconds (default: 300)
 - `VERIFICATION_POLICY`: Policy for signature verification (default: strict)
-
-## Examples
-
-Check the `examples/` directory for complete working examples:
-
-- Maven artifact signing
-- Container image signing
-- Signature verification
-
-## Documentation
-
-- [Setup Guide](docs/setup.md)
-- [Configuration Guide](docs/configuration.md)
-- [Troubleshooting Guide](docs/troubleshooting.md)
 
 ## Contributing
 
